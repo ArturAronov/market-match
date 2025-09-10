@@ -9,7 +9,7 @@ Max size: 64 bytes
 | **1**  | Transaction Type | 1      | 1            | uint8  | 1 = BUY <br/> 2 = SELL                    | Buy or sell order (0 is invalid)                    |
 | **2**  | Method           | 2      | 1            | uint8  | 1 = NEW <br/> 2 = MODIFY <br/> 3 = CANCEL | Defines message type (0 is invalid)                 |
 | **3**  | Order Type       | 3      | 1            | uint8  | 1 = MARKET <br/> 2 = LIMIT                | Market or limit order (0 is invalid)                |
-| **4**  | Ticker           | 4      | 4            | string | ASCII, padded with nulls                  | "XYZQ" <br/> "XYZ\0" <br/> "XY\0\0" <br/> "X\0\0\0" |
+| **4**  | Ticker           | 4      | 4            | string | ASCII, padded with nulls, upper case only | "XYZQ" <br/> "XYZ\0" <br/> "XY\0\0" <br/> "X\0\0\0" |
 | **5**  | Quantity         | 8      | 4            | uint32 | 1 – 4,294,967,295                         | Number of shares (must be > 0)                      |
 | **6**  | Price            | 12     | 4            | uint32 | 1 – 4,294,967,295                         | int in cents, e.g., 12,345 = $123.45                |
 | **7**  | Order Date       | 16     | 8            | uint64 | 1 - 18,446,744,073,709,551,615            | Unix epoch (ms)                                     |
