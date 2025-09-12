@@ -2,19 +2,22 @@ package utils
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type Order struct {
-	TranactionType    int
-	TransactionMethod int
-	OrderType         int
+	TranactionType    uint8
+	TransactionMethod uint8
+	OrderType         uint8
 	Ticker            string
-	Quantity          int
-	Price             int
-	OrderDate         int
-	GoodUntil         int
+	Quantity          uint32
+	Price             uint32
+	OrderDate         uint64
+	GoodUntil         uint64
 	TraderId          string
 	ClientOrderId     string
 }
@@ -22,7 +25,7 @@ type Order struct {
 var URI_LEN = 84
 var ORDER_BYTE_LEN = 63
 
-func ParseOrderUri(uri *string) (*Order, error) {
+func OrderUriParser(uri *string) (*Order, error) {
 	*uri = strings.Replace(*uri, "/", "", 1)
 	if len(*uri) != URI_LEN {
 		return nil, fmt.Errorf("ParseOrderUri: Wrong URI length recieved - expected: %d, recieved: %d", URI_LEN, len(*uri))
@@ -53,19 +56,19 @@ func ParseOrderUri(uri *string) (*Order, error) {
 	if tranactionTypeByte < 1 || tranactionTypeByte > 2 {
 		return nil, fmt.Errorf("ParseOrderUri: Wrong transaction type recieved: %v", tranactionTypeByte)
 	} else {
-		order.TranactionType = int(tranactionTypeByte)
+		order.TranactionType = uint8(tranactionTypeByte)
 	}
 
 	if transactionMethodByte < 1 || transactionMethodByte > 3 {
 		return nil, fmt.Errorf("ParseOrderUri: Wrong transaction method recieved: %v", transactionMethodByte)
 	} else {
-		order.TransactionMethod = int(transactionMethodByte)
+		order.TransactionMethod = uint8(transactionMethodByte)
 	}
 
 	if orderTypeByte < 1 || orderTypeByte > 2 {
 		return nil, fmt.Errorf("ParseOrderUri: Wrong order type recieved: %v", orderTypeByte)
 	} else {
-		order.OrderType = int(orderTypeByte)
+		order.OrderType = uint8(orderTypeByte)
 	}
 
 	for _, byte := range tickerBytes {
@@ -74,7 +77,23 @@ func ParseOrderUri(uri *string) (*Order, error) {
 		}
 	}
 
-	order.Ticker = string(tickerBytes)
+	traderUuid, traderUuidErr := uuid.FromBytes(traderIdBytes)
+	if traderUuidErr != nil {
+		return nil, fmt.Errorf("ParseOrderUri: %w", traderUuidErr)
+	}
 
-	return nil, nil
+	orderUuid, orderUuidErr := uuid.FromBytes(clientOrderIdBytes)
+	if orderUuidErr != nil {
+		return nil, fmt.Errorf("ParseOrderUri: %w", orderUuidErr)
+	}
+
+	order.Ticker = string(tickerBytes)
+	order.Quantity = uint32(binary.BigEndian.Uint32(quantityBytes))
+	order.Price = uint32(binary.BigEndian.Uint32(priceBytes))
+	order.OrderDate = uint64(binary.BigEndian.Uint64(orderDateBytes))
+	order.GoodUntil = uint64(binary.BigEndian.Uint64(goodUntilBytes))
+	order.TraderId = traderUuid.String()
+	order.ClientOrderId = orderUuid.String()
+
+	return &order, nil
 }
