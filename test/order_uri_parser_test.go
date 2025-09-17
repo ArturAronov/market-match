@@ -1,4 +1,4 @@
-// go test ./test -fuzz=FuzzOrderUriParser -fuzztime=160s
+// go test ./test -fuzz=FuzzOrderUriParser -fuzztime=120s
 
 package test
 
@@ -18,13 +18,13 @@ func compressUUID(input string) ([]byte, error) {
 		return nil, fmt.Errorf("empty UUID")
 	}
 
-	if len(input) != 36 { // Standard UUID length with hyphens
+	if len(input) != 36 {
 		return nil, fmt.Errorf("invalid UUID length")
 	}
 
-	validUuidErr := uuid.Validate(input)
-	if validUuidErr != nil {
-		return nil, validUuidErr
+	validUUIDErr := uuid.Validate(input)
+	if validUUIDErr != nil {
+		return nil, validUUIDErr
 	}
 
 	parsedUUID, parsedUUIDErr := uuid.Parse(input)
