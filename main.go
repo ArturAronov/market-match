@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"market-exchange.com/utils"
+	"market-exchange/handlers"
 )
 
 func main() {
 	// Define a handler to process and measure the request
-	http.HandleFunc("/", utils.Measure)
+	http.HandleFunc("/", handlers.GetOrder)
 
 	// Start the HTTP server on port 8080
 	log.Println("Starting server on http://localhost:8080")
