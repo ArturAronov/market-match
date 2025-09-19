@@ -74,7 +74,7 @@ func Measure(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("============================================================")
 	// log.Printf("Total Request Length: %d bytes", requestLength)
 
-	OrderUriParser(&r.RequestURI)
+	OrderUriParser(r.RequestURI)
 	// Respond to the client
 	fmt.Fprintf(w, "Request received, length: %d bytes", requestLength)
 }
