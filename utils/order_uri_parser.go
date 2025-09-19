@@ -25,13 +25,18 @@ type Order struct {
 var URI_LEN = 84
 var ORDER_BYTE_LEN = 63
 
-func OrderUriParser(uri *string) (*Order, error) {
-	*uri = strings.Replace(*uri, "/", "", 1)
-	if len(*uri) != URI_LEN {
-		return nil, fmt.Errorf("ParseOrderUri: Wrong URI length recieved - expected: %d, recieved: %d", URI_LEN, len(*uri))
+func OrderUriParser(uri string) (*Order, error) {
+	var cleanUri string
+
+	if uri[0] == '/' {
+		cleanUri = strings.Replace(uri, "/", "", 1)
 	}
 
-	orderBytes, orderBytesErr := base64.URLEncoding.DecodeString(*uri)
+	if len(cleanUri) != URI_LEN {
+		return nil, fmt.Errorf("ParseOrderUri: Wrong URI length recieved - expected: %d, recieved: %d", URI_LEN, len(cleanUri))
+	}
+
+	orderBytes, orderBytesErr := base64.URLEncoding.DecodeString(cleanUri)
 	if orderBytesErr != nil {
 		return nil, orderBytesErr
 	}
