@@ -1,4 +1,4 @@
-module market-exchange.com
+module market-exchange
 
 go 1.24.5
 
