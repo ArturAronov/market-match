@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"market-exchange/utils"
+
 	"github.com/google/uuid"
-	"market-exchange.com/utils"
 )
 
 func compressUUID(input string) ([]byte, error) {
@@ -134,7 +135,7 @@ func FuzzOrderUriParser(f *testing.F) {
 	f.Add(string([]byte{0xFF, 0xFF}))
 
 	f.Fuzz(func(t *testing.T, encodedOrder string) {
-		parsedOrder, parsedOrderErr := utils.OrderUriParser(&encodedOrder)
+		parsedOrder, parsedOrderErr := utils.OrderUriParser(encodedOrder)
 		if parsedOrderErr != nil {
 			t.Skip()
 		}
